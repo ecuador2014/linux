@@ -1,6 +1,6 @@
 # Perfiles
 
-Perfiles: `humanoid`, `drone`, `car`, `mini`.
+Perfiles: `humanoid`, `drone`, `car`, `mini`, `automation`.
 
 ## humanoid
 **Hardware típico:** mini-PC x86 o SBC ARM64 + actuadores CAN (p. ej. motores tipo MIT/CyberGear/ODrive-CAN), IMU por I2C/SPI/USB,
@@ -37,3 +37,13 @@ cámaras UVC, micrófono/altavoz USB.
 - Bluetooth y 1-Wire en kernel; CAN opcional con MCP2515 por SPI (`CAN_IFACES="can0"`).
 - ROS 2: en placas ≥ 1 GB con ARM64 (`ROS2=1 ARCH=aarch64`). En MCUs usa **micro-ROS** y un agente en la placa (ver ROS2.md).
 - Proyectos: seguidor de línea, rover con cámara, brazo de servos, robot educativo, telepresencia, enjambre por MQTT.
+
+## automation
+**Uso:** pasarela o controlador de automatización industrial, de edificios, invernaderos, bombeo, cintas o celdas robóticas fijas:
+conecta PLC/medidores (Modbus RTU/TCP, OPC UA), sensores/actuadores (GPIO, I2C, 1-Wire, ADC) y publica en MQTT/SCADA.
+- **Protocolos:** `libmodbus`, `open62541` (OPC UA), `mosquitto` (MQTT), CAN/CANopen (SocketCAN), RS-485 (`RS485_DEV`).
+- **Cortafuegos por defecto** (`S10firewall`, nftables): entrada denegada salvo SSH (22), Modbus (502), MQTT (1883), OPC UA (4840), solo desde `FW_ALLOW_CIDR`.
+- **MQTT seguro por defecto:** sin `/etc/mosquitto/passwd` el broker solo escucha en `127.0.0.1`; con usuarios, escucha en red sin acceso anónimo.
+- **Failsafe:** `FAILSAFE_CMD` típico = salidas a estado seguro con `gpioset`; vacío por defecto (defínelo según tu proceso).
+- Opcional ROS 2 (`ROS2=1`); EtherCAT no incluido (ver PORTING.md).
+- Proyectos: pasarela Modbus→MQTT (ejemplo incluido), invernadero, monitor de energía, celda pick&place.

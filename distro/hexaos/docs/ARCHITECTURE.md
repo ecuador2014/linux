@@ -10,7 +10,7 @@ hexaos/
 ├── tools/gen-defconfigs.sh                   # compone profiles/ -> configs/ (defconfigs)
 ├── configs/                                  # defconfigs GENERADOS (no editar a mano)
 ├── board/hexaos/
-│   ├── linux-{base,humanoid,drone,car,mini}.fragment   # opciones de kernel
+│   ├── linux-{base,humanoid,drone,car,mini,automation}.fragment   # opciones de kernel
 │   ├── overlay-common/    # RT-tuning, CAN, supervisor, sysctl, SSH
 │   ├── overlay-<perfil>/  # profile.conf + servicios específicos
 │   ├── overlay-ros2/      # ros2.conf, cyclonedds.xml, S91ros2, profile.d
@@ -32,6 +32,8 @@ BusyBox init ejecuta `/etc/init.d/S*` en orden:
 | `S20can` | levanta `CAN_IFACES` a `CAN_BITRATE` |
 | `S25mavlink` (drone) | puente MAVLink serie ↔ UDP |
 | `S25ptp` (car) | `ptp4l` + `phc2sys` |
+| `S10firewall` (automation) | nftables, entrada denegada por defecto |
+| `S30mosquitto-conf` (automation) | MQTT seguro por defecto |
 | `S30wifi` (mini) | WiFi cliente o AP de configuración |
 | `S50dropbear` | SSH solo clave |
 | `S90hexa-core` | supervisor de `CORE_CMD` + failsafe |

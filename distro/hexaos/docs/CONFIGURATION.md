@@ -16,6 +16,8 @@ Carga `/etc/hexa/profile.conf` y define valores por defecto.
 | `CAN_IFACES`, `CAN_BITRATE` | humanoid, car | Interfaces SocketCAN y bitrate |
 | `PTP_IFACE` | car | NIC con PTP hardware |
 | `FC_DEV`, `FC_BAUD`, `GCS_UDP` | drone | Puerto serie del autopiloto y destino UDP |
+| `FW_ENABLE`, `FW_TCP_PORTS`, `FW_ALLOW_CIDR` | automation | Cortafuegos nftables |
+| `RS485_DEV`, `RS485_BAUD` | automation | Puerto Modbus RTU |
 | `MCU_DEV`, `MCU_BAUD` | mini | Puerto serie al microcontrolador |
 | `WIFI_IFACE`, `AP_SSID`, `AP_PASS`, `AP_ADDR` | mini | WiFi cliente/AP (AP solo si `AP_PASS` ≥ 8 caracteres) |
 

@@ -32,5 +32,15 @@ Configura en PX4: `MAV_1_CONFIG`/`UXRCE_DDS_CFG` hacia el puerto usado.
 ## Mini: brazo de servos (PCA9685 por I2C)
 `i2cdetect -y 1` debe mostrar `0x40`; escribe registros con `i2cset` o desde Python (`/dev/i2c-1`). Alimenta los servos aparte (nunca del 5 V de la placa).
 
+## Automatización: pasarela Modbus → MQTT
+```sh
+PLC_HOST=192.168.1.10 UNIT=1 START=0 COUNT=10 /opt/hexa/bin/hexa-core    # ver examples/automation-modbus-mqtt
+mosquitto_sub -h 127.0.0.1 -t 'hexa/modbus/#'
+```
+Pruébalo con un servidor Modbus simulado en tu PC. Para Modbus RTU usa `libmodbus` sobre `RS485_DEV`.
+
+## Automatización: red mínima segura
+1. Ajusta `FW_ALLOW_CIDR`. 2. Usuarios MQTT: `mosquitto_passwd -c /etc/mosquitto/passwd operador`. 3. Separa red OT/IT con VLAN.
+
 ## Simulación sin hardware
 `modprobe vcan; ip link add dev can0 type vcan; ip link set up can0` (el kernel incluye `vcan`) y ejecuta `hexa-core` contra `can0`.

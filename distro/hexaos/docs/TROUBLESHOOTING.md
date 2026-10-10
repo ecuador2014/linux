@@ -12,4 +12,5 @@
 | SSH rechaza | Instala clave con `HEXA_SSH_PUBKEY` y reconstruye; no hay login por contraseña |
 | `ros2: command not found` | `. /etc/profile.d/ros2.sh`; verifica `/opt/ros/setup.sh` |
 | `mini`: el AP WiFi no aparece | Define `AP_PASS` (≥ 8 caracteres) y que no exista `network=` en `/etc/wpa_supplicant.conf`; mira `logread` |
+| `automation`: no conecta a 502/1883 | Revisa `FW_TCP_PORTS`/`FW_ALLOW_CIDR` y `nft list ruleset`; sin passwd MQTT solo escucha en localhost |
 | aarch64 no arranca en la placa | Las configs genéricas no incluyen bootloader/DTB: `docs/PORTING.md` |

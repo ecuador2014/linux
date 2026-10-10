@@ -1,12 +1,13 @@
 # HEXAOS
 
-Distro Linux ligera y de **tiempo real** para robótica móvil. Una base común y cuatro perfiles:
+Distro Linux ligera y de **tiempo real** para robótica móvil. Una base común y cinco perfiles:
 
 | Perfil | Para | Bus principal | Extras |
 |---|---|---|---|
 | `humanoid` | Humanoides, brazos, cuadrúpedos | CAN 1 Mbit/s | audio, joystick, cámaras |
 | `drone` | Computador de a bordo de dron (PX4/ArduPilot) | UART MAVLink | gpsd, GStreamer, WiFi, PWM |
 | `car` | Vehículos autónomos / AGV / rovers | CAN 500 kbit/s | PTP (lidar/cámaras), gpsd, Ethernet |
+| `automation` | Pasarelas y controladores industriales / edificios / IoT | Modbus, RS-485, MQTT, OPC UA, CAN, GPIO | cortafuegos nftables, 1-Wire |
 | `mini` | Robots pequeños: Pi Zero/3/4, rovers, brazos, seguidores de línea (rootfs 128 MB) | GPIO/I2C + serie a Arduino/ESP32 | WiFi cliente/AP, MQTT, Bluetooth, 1-Wire |
 
 Todos incluyen kernel 6.18 LTS `PREEMPT_RT`, BusyBox, SSH solo con claves y herramientas de diagnóstico.
