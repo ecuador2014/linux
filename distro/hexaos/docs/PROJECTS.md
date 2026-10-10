@@ -24,5 +24,13 @@ Configura en PX4: `MAV_1_CONFIG`/`UXRCE_DDS_CFG` hacia el puerto usado.
 - Interfaz con la ECU: CAN `can0` 500 kbit/s; registra con `candump -l can0` y reproduce con `canplayer`.
 - Captura de lidar: `tcpdump -i eth0 -w lidar.pcap udp port 2368`.
 
+## Mini: rover con Arduino/ESP32 por serie
+1. Firmware del MCU: acepta líneas `M <izq> <der>\n` (PWM −255..255) y `STOP\n`.
+2. Copia `examples/mini-serial-bridge/drive.py` a `overlay-mini/opt/hexa/bin/hexa-core`; el supervisor lo reinicia si cae y envía `STOP`.
+3. Control remoto: define `AP_PASS`, conéctate al AP `hexa-mini` y publica por MQTT (`mosquitto_pub -h 192.168.4.1 -t hexa/cmd -m "M 100 100"`).
+
+## Mini: brazo de servos (PCA9685 por I2C)
+`i2cdetect -y 1` debe mostrar `0x40`; escribe registros con `i2cset` o desde Python (`/dev/i2c-1`). Alimenta los servos aparte (nunca del 5 V de la placa).
+
 ## Simulación sin hardware
 `modprobe vcan; ip link add dev can0 type vcan; ip link set up can0` (el kernel incluye `vcan`) y ejecuta `hexa-core` contra `can0`.

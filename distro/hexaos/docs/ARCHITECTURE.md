@@ -7,10 +7,10 @@ hexaos/
 ├── external.desc / external.mk / Config.in   # registro del árbol externo (nombre HEXAOS)
 ├── package/ros2-runtime/                     # paquete Buildroot: instala el árbol ROS 2 en /opt/ros
 ├── profiles/*.frag                           # piezas de defconfig: arch, libc, base, perfil, ros2
-├── tools/gen-defconfigs.sh                   # compone profiles/ -> configs/ (12 defconfigs)
+├── tools/gen-defconfigs.sh                   # compone profiles/ -> configs/ (defconfigs)
 ├── configs/                                  # defconfigs GENERADOS (no editar a mano)
 ├── board/hexaos/
-│   ├── linux-{base,humanoid,drone,car}.fragment   # opciones de kernel
+│   ├── linux-{base,humanoid,drone,car,mini}.fragment   # opciones de kernel
 │   ├── overlay-common/    # RT-tuning, CAN, supervisor, sysctl, SSH
 │   ├── overlay-<perfil>/  # profile.conf + servicios específicos
 │   ├── overlay-ros2/      # ros2.conf, cyclonedds.xml, S91ros2, profile.d
@@ -32,6 +32,7 @@ BusyBox init ejecuta `/etc/init.d/S*` en orden:
 | `S20can` | levanta `CAN_IFACES` a `CAN_BITRATE` |
 | `S25mavlink` (drone) | puente MAVLink serie ↔ UDP |
 | `S25ptp` (car) | `ptp4l` + `phc2sys` |
+| `S30wifi` (mini) | WiFi cliente o AP de configuración |
 | `S50dropbear` | SSH solo clave |
 | `S90hexa-core` | supervisor de `CORE_CMD` + failsafe |
 | `S91ros2` (ros2) | `ros2 launch` con prioridad RT + failsafe |

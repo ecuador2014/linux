@@ -1,0 +1,29 @@
+#!/bin/sh
+# WiFi: cliente (wpa_supplicant + DHCP) o punto de acceso de configuracion (hostapd + dnsmasq)
+. /etc/hexa/hexa.conf
+case "$1" in
+  start)
+    ip link show "$WIFI_IFACE" >/dev/null 2>&1 || exit 0
+    if grep -qs '^network=' /etc/wpa_supplicant.conf; then
+        wpa_supplicant -B -i "$WIFI_IFACE" -c /etc/wpa_supplicant.conf
+        udhcpc -b -i "$WIFI_IFACE" -p /var/run/udhcpc-wlan.pid
+    elif [ "${#AP_PASS}" -ge 8 ]; then
+        ip addr add "$AP_ADDR/24" dev "$WIFI_IFACE"; ip link set "$WIFI_IFACE" up
+        cat > /tmp/hostapd.conf <<CFG
+interface=$WIFI_IFACE
+ssid=$AP_SSID
+hw_mode=g
+channel=6
+wpa=2
+wpa_key_mgmt=WPA-PSK
+rsn_pairwise=CCMP
+wpa_passphrase=$AP_PASS
+CFG
+        hostapd -B /tmp/hostapd.conf
+        dnsmasq --interface="$WIFI_IFACE" --dhcp-range=192.168.4.10,192.168.4.50,12h --no-resolv
+    else
+        logger -t hexa "WiFi sin configurar: crea /etc/wpa_supplicant.conf o define AP_PASS"
+    fi ;;
+  stop) killall hostapd dnsmasq wpa_supplicant 2>/dev/null ;;
+  *) echo "Uso: $0 {start|stop}"; exit 1 ;;
+esac

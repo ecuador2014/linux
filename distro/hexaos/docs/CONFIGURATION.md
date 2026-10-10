@@ -6,7 +6,7 @@ Carga `/etc/hexa/profile.conf` y define valores por defecto.
 | Variable | Defecto | Descripción |
 |---|---|---|
 | `CORE_CMD` | `/opt/hexa/bin/hexa-core` | Proceso de control supervisado |
-| `RT_CPUS` | `1` | CPUs (lista taskset) para `CORE_CMD` |
+| `RT_CPUS` | `1` | CPUs (lista taskset) para `CORE_CMD`; vacío = sin afinidad |
 | `RT_PRIO` | `80` | Prioridad `SCHED_FIFO` (1-99) |
 | `FAILSAFE_CMD` | según perfil | Comando shell al caer/parar `CORE_CMD` |
 
@@ -16,6 +16,8 @@ Carga `/etc/hexa/profile.conf` y define valores por defecto.
 | `CAN_IFACES`, `CAN_BITRATE` | humanoid, car | Interfaces SocketCAN y bitrate |
 | `PTP_IFACE` | car | NIC con PTP hardware |
 | `FC_DEV`, `FC_BAUD`, `GCS_UDP` | drone | Puerto serie del autopiloto y destino UDP |
+| `MCU_DEV`, `MCU_BAUD` | mini | Puerto serie al microcontrolador |
+| `WIFI_IFACE`, `AP_SSID`, `AP_PASS`, `AP_ADDR` | mini | WiFi cliente/AP (AP solo si `AP_PASS` ≥ 8 caracteres) |
 
 ## /etc/hexa/ros2.conf (capa ROS 2)
 `ROS_LAUNCH_ENABLE`, `ROS_DOMAIN_ID`, `RMW_IMPLEMENTATION`, `ROS_LOCALHOST_ONLY`, `ROS_LAUNCH_PKG`, `ROS_LAUNCH_FILE`,

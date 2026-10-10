@@ -15,6 +15,7 @@
 ## Seguridad de acceso
 - Consola: root **sin contraseña** (solo desarrollo). Producción: pon `BR2_TARGET_GENERIC_ROOT_PASSWD` con hash o desactiva getty.
 - SSH: Dropbear con `-s` (solo claves). Instala la tuya con `HEXA_SSH_PUBKEY`.
+- `mini`: el AP WiFi no arranca sin `AP_PASS` (deliberado); cambia la contraseña en cada unidad. Mosquitto escucha sin autenticación: configura usuarios/TLS antes de exponerlo.
 - Red: no hay firewall por defecto. Con `ROS_LOCALHOST_ONLY=0`, DDS queda sin autenticar: usa SROS2, VPN (WireGuard) o red aislada.
 - MAVLink por UDP: sin firma por defecto; activa MAVLink 2 signing en el autopiloto.
 - Actualizaciones: no hay OTA; reconstruye y reflashea. Revisa CVE del kernel/paquetes al subir de versión.

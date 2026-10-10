@@ -7,7 +7,7 @@
 set -e
 HERE=$(cd "$(dirname "$0")" && pwd)
 ROS_DISTRO=${ROS_DISTRO:-jazzy}
-PROFILE=${1:?Uso: ros2/cross-build.sh <humanoid|drone|car> (tras "make ... sdk" con ROS2=1)}
+PROFILE=${1:?Uso: ros2/cross-build.sh <humanoid|drone|car|mini> (tras "make ... sdk" con ROS2=1)}
 ARCH=${ARCH:-x86_64}
 SDK_TGZ=$(ls "$HERE"/../output/${PROFILE}_ros2_${ARCH}/images/*_sdk-buildroot.tar.gz | head -1)
 WS=$HERE/ws-${PROFILE}-${ARCH}

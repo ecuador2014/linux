@@ -11,4 +11,5 @@
 | Latencia alta | Ver `docs/REALTIME.md` (isolcpus, SMI, governor) |
 | SSH rechaza | Instala clave con `HEXA_SSH_PUBKEY` y reconstruye; no hay login por contraseña |
 | `ros2: command not found` | `. /etc/profile.d/ros2.sh`; verifica `/opt/ros/setup.sh` |
+| `mini`: el AP WiFi no aparece | Define `AP_PASS` (≥ 8 caracteres) y que no exista `network=` en `/etc/wpa_supplicant.conf`; mira `logread` |
 | aarch64 no arranca en la placa | Las configs genéricas no incluyen bootloader/DTB: `docs/PORTING.md` |

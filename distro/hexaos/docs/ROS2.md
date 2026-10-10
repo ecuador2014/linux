@@ -26,6 +26,10 @@ Tus paquetes (`ros2_control`, drivers, `hexa_bringup`…) se añaden a `ros2/ws-
 - Evita `ros2 launch` con muchos nodos en el mismo núcleo RT: separa percepción (CPUs 2+) del control (CPU 1).
 - Usa QoS `SensorData` para sensores y `Reliable` con profundidad baja para comandos.
 
+## Robots pequeños
+ROS 2 completo exige ≥ 1 GB de RAM y ARM64/x86_64 (no hay variante `arm` 32 bits). En MCUs usa **micro-ROS** (firmware en el
+MCU) con el **micro-ROS agent** en la placa (compílalo en el workspace de `cross-build.sh`).
+
 ## Variantes por perfil
 - **drone:** micro-XRCE-DDS Agent + `px4_msgs`; **car:** Nav2/Autoware (necesitan más RAM y GPU: considera Ubuntu para percepción
   pesada y HEXAOS para el control); **humanoid:** `ros2_control` + `controller_manager` en el lazo RT.

@@ -7,7 +7,7 @@ PIDFILE=/var/run/ros2-supervisor.pid
 run() {
     . /etc/profile.d/ros2.sh
     while :; do
-        taskset -c "$ROS_RT_CPUS" chrt -f "$ROS_RT_PRIO" \
+        ${ROS_RT_CPUS:+taskset -c "$ROS_RT_CPUS"} chrt -f "$ROS_RT_PRIO" \
             ros2 launch "$ROS_LAUNCH_PKG" "$ROS_LAUNCH_FILE"
         logger -t ros2 "launch termino (rc=$?): e-stop"
         [ -n "$FAILSAFE_CMD" ] && sh -c "$FAILSAFE_CMD" 2>/dev/null

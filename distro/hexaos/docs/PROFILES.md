@@ -1,5 +1,7 @@
 # Perfiles
 
+Perfiles: `humanoid`, `drone`, `car`, `mini`.
+
 ## humanoid
 **Hardware típico:** mini-PC x86 o SBC ARM64 + actuadores CAN (p. ej. motores tipo MIT/CyberGear/ODrive-CAN), IMU por I2C/SPI/USB,
 cámaras UVC, micrófono/altavoz USB.
@@ -23,3 +25,15 @@ cámaras UVC, micrófono/altavoz USB.
 - `tcpdump`/`libpcap` para depurar el tráfico de sensores.
 - Proyectos: seguimiento de ruta (pure pursuit/MPC), AGV de almacén, rover agrícola, plataforma Autoware/Nav2.
 - **Define tú `FAILSAFE_CMD`** (frenado seguro) según el protocolo de tu vehículo; viene vacío a propósito.
+
+## mini
+**Hardware típico:** Raspberry Pi Zero 2 W / 3 / 4, Orange Pi Zero, placas con ≥ 256 MB de RAM, más un microcontrolador
+(Arduino, ESP32, STM32) que mueve motores y lee sensores; servos por PCA9685 (I2C); ultrasonidos/IR por GPIO; cámara USB/CSI.
+- Imagen de **128 MB** (musl, BusyBox). ARMv7 32 bits (`ARCH=arm`, kernel `multi_v7`) o ARM64.
+- `RT_CPUS` vacío: sin afinidad, válido en placas de 1 núcleo; prioridad RT 60.
+- Serie al MCU: `MCU_DEV`/`MCU_BAUD` (`pyserial` incluido). Failsafe por defecto: enviar `STOP\n` al MCU (adáptalo a tu protocolo).
+- WiFi (`S30wifi`): cliente si existe `/etc/wpa_supplicant.conf`; si no, **punto de acceso** `AP_SSID` con WPA2 cuando defines `AP_PASS`
+  (8-63 caracteres; no hay contraseña por defecto, y sin ella el AP no arranca). Broker MQTT (`mosquitto`) para telemetría/mando.
+- Bluetooth y 1-Wire en kernel; CAN opcional con MCP2515 por SPI (`CAN_IFACES="can0"`).
+- ROS 2: en placas ≥ 1 GB con ARM64 (`ROS2=1 ARCH=aarch64`). En MCUs usa **micro-ROS** y un agente en la placa (ver ROS2.md).
+- Proyectos: seguidor de línea, rover con cámara, brazo de servos, robot educativo, telepresencia, enjambre por MQTT.

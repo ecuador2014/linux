@@ -1,20 +1,22 @@
 # HEXAOS
 
-Distro Linux ligera y de **tiempo real** para robótica móvil. Una base común y tres perfiles:
+Distro Linux ligera y de **tiempo real** para robótica móvil. Una base común y cuatro perfiles:
 
 | Perfil | Para | Bus principal | Extras |
 |---|---|---|---|
 | `humanoid` | Humanoides, brazos, cuadrúpedos | CAN 1 Mbit/s | audio, joystick, cámaras |
 | `drone` | Computador de a bordo de dron (PX4/ArduPilot) | UART MAVLink | gpsd, GStreamer, WiFi, PWM |
 | `car` | Vehículos autónomos / AGV / rovers | CAN 500 kbit/s | PTP (lidar/cámaras), gpsd, Ethernet |
+| `mini` | Robots pequeños: Pi Zero/3/4, rovers, brazos, seguidores de línea (rootfs 128 MB) | GPIO/I2C + serie a Arduino/ESP32 | WiFi cliente/AP, MQTT, Bluetooth, 1-Wire |
 
 Todos incluyen kernel 6.18 LTS `PREEMPT_RT`, BusyBox, SSH solo con claves y herramientas de diagnóstico.
-Cada perfil tiene variante **ROS 2** (Jazzy + Cyclone DDS) y arquitecturas `x86_64` y `aarch64`.
+Cada perfil tiene variante **ROS 2** (Jazzy + Cyclone DDS) y arquitecturas `x86_64`, `aarch64` y `arm` (32 bits, ARMv7; solo sin ROS 2).
 
 ```sh
 ./tools/gen-defconfigs.sh                 # (re)genera configs/ — ya vienen generadas
 HEXA_SSH_PUBKEY=~/.ssh/id_ed25519.pub ./build.sh humanoid          # mínima (musl)
 ROS2=1 ARCH=aarch64 ./build.sh drone                                # con ROS 2, ARM64
+ARCH=arm ./build.sh mini                                            # robot pequeño ARMv7, sin ROS 2
 ./run-qemu.sh humanoid                                              # prueba x86_64 en QEMU
 ```
 

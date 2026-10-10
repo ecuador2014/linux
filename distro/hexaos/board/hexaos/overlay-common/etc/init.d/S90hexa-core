@@ -9,7 +9,7 @@ failsafe() { [ -n "$FAILSAFE_CMD" ] && sh -c "$FAILSAFE_CMD" 2>/dev/null; }
 supervise() {
     while :; do
         if [ -x "$CORE_CMD" ]; then
-            taskset -c "$RT_CPUS" chrt -f "$RT_PRIO" "$CORE_CMD"
+            ${RT_CPUS:+taskset -c "$RT_CPUS"} chrt -f "$RT_PRIO" "$CORE_CMD"
             logger -t hexa "$CORE_CMD termino (rc=$?): failsafe"
             failsafe
         fi
