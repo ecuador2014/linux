@@ -1,1 +1,0 @@
-source "$BR2_EXTERNAL_HUMANOIDOS_PATH/package/ros2-runtime/Config.in"

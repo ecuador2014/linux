@@ -1,0 +1,2 @@
+Coloca aqui tu binario de control como "hexa-core" (ejecutable).
+S90hexa-core lo lanzara con SCHED_FIFO en las CPUs RT_CPUS.

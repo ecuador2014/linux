@@ -1,2 +1,0 @@
-Coloca aqui tu binario de control como "robot-core" (ejecutable).
-S90robot lo lanzara con SCHED_FIFO en las CPUs RT_CPUS.

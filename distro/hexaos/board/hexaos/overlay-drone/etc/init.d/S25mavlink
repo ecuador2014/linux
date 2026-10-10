@@ -1,0 +1,12 @@
+#!/bin/sh
+# Puente MAVLink: controlador de vuelo (serie) <-> UDP
+. /etc/hexa/hexa.conf
+PIDFILE=/var/run/mavlink-bridge.pid
+case "$1" in
+  start)
+    [ -c "$FC_DEV" ] || exit 0
+    socat "$FC_DEV,raw,echo=0,b$FC_BAUD" "UDP-DATAGRAM:$GCS_UDP" &
+    echo $! > "$PIDFILE" ;;
+  stop) [ -f "$PIDFILE" ] && kill "$(cat "$PIDFILE")"; rm -f "$PIDFILE" ;;
+  *) echo "Uso: $0 {start|stop}"; exit 1 ;;
+esac

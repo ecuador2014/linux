@@ -1,0 +1,27 @@
+#!/bin/sh
+# Supervisor del proceso de control del vehiculo/robot (CORE_CMD).
+# Si cae: ejecuta FAILSAFE_CMD y lo reinicia.
+. /etc/hexa/hexa.conf
+PIDFILE=/var/run/hexa-supervisor.pid
+
+failsafe() { [ -n "$FAILSAFE_CMD" ] && sh -c "$FAILSAFE_CMD" 2>/dev/null; }
+
+supervise() {
+    while :; do
+        if [ -x "$CORE_CMD" ]; then
+            taskset -c "$RT_CPUS" chrt -f "$RT_PRIO" "$CORE_CMD"
+            logger -t hexa "$CORE_CMD termino (rc=$?): failsafe"
+            failsafe
+        fi
+        sleep 2
+    done
+}
+
+case "$1" in
+  start) supervise & echo $! > "$PIDFILE" ;;
+  stop)
+    [ -f "$PIDFILE" ] && kill "$(cat "$PIDFILE")" 2>/dev/null
+    pkill -x "$(basename "$CORE_CMD")" 2>/dev/null
+    failsafe; rm -f "$PIDFILE" ;;
+  *) echo "Uso: $0 {start|stop}"; exit 1 ;;
+esac

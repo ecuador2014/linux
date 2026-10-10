@@ -1,0 +1,3 @@
+BR2_aarch64=y
+BR2_cortex_a72=y
+BR2_LINUX_KERNEL_IMAGE=y

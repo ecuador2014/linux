@@ -1,0 +1,30 @@
+#!/bin/bash
+# Lanza el launch file de ROS 2 con prioridad RT y e-stop si cae.
+. /etc/hexa/hexa.conf
+. /etc/hexa/ros2.conf
+PIDFILE=/var/run/ros2-supervisor.pid
+
+run() {
+    . /etc/profile.d/ros2.sh
+    while :; do
+        taskset -c "$ROS_RT_CPUS" chrt -f "$ROS_RT_PRIO" \
+            ros2 launch "$ROS_LAUNCH_PKG" "$ROS_LAUNCH_FILE"
+        logger -t ros2 "launch termino (rc=$?): e-stop"
+        [ -n "$FAILSAFE_CMD" ] && sh -c "$FAILSAFE_CMD" 2>/dev/null
+        sleep 2
+    done
+}
+
+case "$1" in
+  start)
+    [ -f /opt/ros/setup.sh ] && [ "$ROS_LAUNCH_ENABLE" = 1 ] || exit 0
+    run &
+    echo $! > "$PIDFILE"
+    ;;
+  stop)
+    [ -f "$PIDFILE" ] && kill "$(cat "$PIDFILE")" 2>/dev/null
+    pkill -f "ros2 launch" 2>/dev/null
+    rm -f "$PIDFILE"
+    ;;
+  *) echo "Uso: $0 {start|stop}"; exit 1 ;;
+esac
