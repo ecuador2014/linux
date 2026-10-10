@@ -1,0 +1,18 @@
+#!/bin/sh
+# Levanta interfaces SocketCAN
+. /etc/robot/robot.conf
+case "$1" in
+  start)
+    for i in $CAN_IFACES; do
+        if ip link show "$i" >/dev/null 2>&1; then
+            ip link set "$i" type can bitrate "$CAN_BITRATE" restart-ms 100
+            ip link set "$i" txqueuelen 1000
+            ip link set "$i" up
+        fi
+    done
+    ;;
+  stop)
+    for i in $CAN_IFACES; do ip link set "$i" down 2>/dev/null; done
+    ;;
+  *) echo "Uso: $0 {start|stop}"; exit 1 ;;
+esac

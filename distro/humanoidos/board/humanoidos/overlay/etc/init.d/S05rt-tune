@@ -1,0 +1,16 @@
+#!/bin/sh
+# Ajustes de tiempo real: governor, IRQ fuera de las CPUs de control
+. /etc/robot/robot.conf
+case "$1" in
+  start)
+    for g in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+        [ -w "$g" ] && echo performance > "$g"
+    done
+    sysctl -q -p /etc/sysctl.d/robot.conf
+    for f in /proc/irq/*/smp_affinity_list; do
+        echo 0 > "$f" 2>/dev/null || true
+    done
+    ;;
+  stop) ;;
+  *) echo "Uso: $0 {start|stop}"; exit 1 ;;
+esac
