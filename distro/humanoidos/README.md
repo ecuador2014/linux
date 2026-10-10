@@ -4,7 +4,7 @@ Distro Linux ligera y de tiempo real para robots humanoides, como árbol externo
 [Buildroot](https://buildroot.org). Arranca en segundos y ocupa decenas de MB.
 
 ## Qué incluye
-- Kernel 6.12 `PREEMPT_RT`, HZ=1000, `NO_HZ_FULL`, governor `performance`, sin depuración.
+- Kernel 6.18 LTS `PREEMPT_RT`, HZ=1000, `NO_HZ_FULL`, governor `performance`, sin depuración.
 - Drivers de robot: SocketCAN (gs_usb, MCP251x, PEAK, Kvaser, slcan), GPIO, I2C, SPI, IIO, UVC, audio USB, watchdog.
 - Userland BusyBox + eudev, musl (o glibc con ROS 2), SSH Dropbear (solo claves), chrony, can-utils, libgpiod, i2c/spi-tools, rt-tests, Python 3.
 - Servicios: `S05rt-tune` (IRQ/governor), `S20can` (CAN), `S90robot` (supervisor de `/opt/robot/bin/robot-core` con SCHED_FIFO + e-stop CAN si cae), `S91ros2`.
