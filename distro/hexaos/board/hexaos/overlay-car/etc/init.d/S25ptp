@@ -1,0 +1,12 @@
+#!/bin/sh
+# Sincronizacion PTP (lidar/camaras/ECU) con linuxptp
+. /etc/hexa/hexa.conf
+case "$1" in
+  start)
+    ptp4l -i "$PTP_IFACE" -f /etc/hexa/ptp4l.conf -m -q &
+    echo $! > /var/run/ptp4l.pid
+    sleep 1; phc2sys -a -rr -q &
+    echo $! > /var/run/phc2sys.pid ;;
+  stop) kill "$(cat /var/run/ptp4l.pid)" "$(cat /var/run/phc2sys.pid)" 2>/dev/null ;;
+  *) echo "Uso: $0 {start|stop}"; exit 1 ;;
+esac

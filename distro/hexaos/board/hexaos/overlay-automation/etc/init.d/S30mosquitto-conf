@@ -1,0 +1,13 @@
+#!/bin/sh
+# Escribe una configuracion segura de mosquitto (solo localhost si no hay /etc/mosquitto/passwd)
+case "$1" in
+  start)
+    mkdir -p /etc/mosquitto
+    if [ -s /etc/mosquitto/passwd ]; then
+        printf 'listener 1883\nallow_anonymous false\npassword_file /etc/mosquitto/passwd\n' > /etc/mosquitto/mosquitto.conf
+    else
+        printf 'listener 1883 127.0.0.1\nallow_anonymous true\n' > /etc/mosquitto/mosquitto.conf
+    fi ;;
+  stop) ;;
+  *) echo "Uso: $0 {start|stop}"; exit 1 ;;
+esac

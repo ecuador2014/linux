@@ -1,0 +1,1 @@
+source "$BR2_EXTERNAL_HEXAOS_PATH/package/ros2-runtime/Config.in"

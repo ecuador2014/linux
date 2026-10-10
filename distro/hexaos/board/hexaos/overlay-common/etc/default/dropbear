@@ -1,0 +1,2 @@
+# Solo claves publicas: sin login por password
+DROPBEAR_ARGS="-s"

@@ -1,0 +1,23 @@
+#!/bin/sh
+# Cortafuegos nftables: entrada denegada salvo loopback, conexiones establecidas, ICMP y puertos permitidos
+. /etc/hexa/hexa.conf
+case "$1" in
+  start)
+    [ "$FW_ENABLE" = 1 ] || exit 0
+    nft flush ruleset
+    nft add table inet hexa
+    nft add chain inet hexa input '{ type filter hook input priority 0; policy drop; }'
+    nft add rule inet hexa input iif lo accept
+    nft add rule inet hexa input ct state established,related accept
+    nft add rule inet hexa input meta l4proto '{ icmp, ipv6-icmp }' accept
+    nft add rule inet hexa input udp sport 67 udp dport 68 accept   # respuestas DHCP
+    ports=$(echo "$FW_TCP_PORTS" | tr ' ' ',')
+    if [ -n "$FW_ALLOW_CIDR" ]; then
+        nets=$(echo "$FW_ALLOW_CIDR" | tr ' ' ',')
+        nft add rule inet hexa input ip saddr "{ $nets }" tcp dport "{ $ports }" accept
+    else
+        nft add rule inet hexa input tcp dport "{ $ports }" accept
+    fi ;;
+  stop) nft flush ruleset ;;
+  *) echo "Uso: $0 {start|stop}"; exit 1 ;;
+esac
