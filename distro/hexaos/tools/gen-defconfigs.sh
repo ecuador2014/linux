@@ -5,12 +5,12 @@ HERE=$(cd "$(dirname "$0")/.." && pwd)
 P=$HERE/profiles
 K='$(BR2_EXTERNAL_HEXAOS_PATH)/board/hexaos'
 mkdir -p "$HERE/configs"; rm -f "$HERE"/configs/*_defconfig
-for prof in humanoid drone car mini; do
+for prof in humanoid drone car mini automation; do
  for arch in x86_64 aarch64 arm; do
   for ros in no yes; do
     [ $ros = yes ] && [ $arch = arm ] && continue   # ROS 2 no se ofrece en ARM 32 bits
     if [ $ros = yes ]; then libc=glibc; suf=_ros2; size=2G; ov="$K/overlay-ros2"; else libc=musl; suf=; size=512M; ov=; fi
-    [ $prof = mini ] && [ $ros = no ] && size=128M
+    [ $ros = no ] && case $prof in mini) size=128M;; automation) size=256M;; esac
     out=$HERE/configs/hexaos_${prof}${suf}_${arch}_defconfig
     overlays="$K/overlay-common $K/overlay-$prof${ov:+ $ov}"
     {
