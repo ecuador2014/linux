@@ -19,3 +19,7 @@ fi
 make -C "$BR_DIR" O="$OUT" BR2_EXTERNAL="$HERE" "$DEFCONFIG"
 make -C "$BR_DIR" O="$OUT" -j"$(nproc)"
 echo "Listo: $OUT/images/"
+if [ "$ARCH" = x86_64 ]; then
+    "$HERE/tools/make-images.sh" "$OUT/images" "$PROFILE${SUF}" || \
+        echo "Aviso: no se generaron la ISO ni el .img (ver dependencias en tools/make-images.sh); bzImage y rootfs.ext4 siguen disponibles"
+fi
