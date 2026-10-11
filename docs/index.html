@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HEXAOS · Linux en tiempo real para robots</title>
+<meta name="description" content="HEXAOS: distro Linux ligera de tiempo real (PREEMPT_RT) para humanoides, drones, coches autónomos, robots pequeños y automatización. Capa ROS 2 opcional.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2l12 7v14l-12 7-12-7V9z' fill='%2300b3a4'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#0b0f14; --panel:#121923; --panel2:#0f151d; --text:#e6edf3; --muted:#9aa7b4;
+  --line:#223040; --accent:#19d3c0; --accent-ink:#04201d; --warn:#f0b429; --code:#0a0e13;
+  --radius:14px; color-scheme:dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f6f8fa; --panel:#ffffff; --panel2:#f0f3f6; --text:#14202b; --muted:#566574;
+    --line:#d6dde4; --accent:#007d72; --accent-ink:#ffffff; --warn:#8a5a00; --code:#eef2f6; color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f6f8fa; --panel:#ffffff; --panel2:#f0f3f6; --text:#14202b; --muted:#566574;
+  --line:#d6dde4; --accent:#007d72; --accent-ink:#ffffff; --warn:#8a5a00; --code:#eef2f6; color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+header.nav{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:16px;height:56px}
+.brand{font-weight:800;letter-spacing:.08em;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px}
+.brand svg{width:22px;height:22px}
+.nav nav{margin-left:auto;display:flex;gap:16px;flex-wrap:wrap}
+.nav nav a{color:var(--muted);text-decoration:none;font-size:14px}
+.nav nav a:hover{color:var(--text)}
+.hero{padding:72px 0 40px}
+.hero .tag{display:inline-block;font-size:13px;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:2px 12px;margin-bottom:16px}
+.hero h1{font-size:clamp(34px,6vw,60px);line-height:1.08;margin:0 0 16px;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p.lead{font-size:clamp(17px,2.2vw,20px);color:var(--muted);max-width:720px;margin:0 0 28px}
+.btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-block;padding:11px 20px;border-radius:10px;text-decoration:none;font-weight:600;border:1px solid var(--line);color:var(--text);background:var(--panel)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:hover{filter:brightness(1.1)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:40px 0 0}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+.stat b{display:block;font-size:22px}
+.stat span{color:var(--muted);font-size:14px}
+section{padding:48px 0}
+section h2{font-size:clamp(24px,3.6vw,32px);margin:0 0 8px;letter-spacing:-.01em}
+section .sub{color:var(--muted);margin:0 0 28px;max-width:720px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.card h3{margin:0 0 4px;font-size:18px}
+.card .for{color:var(--accent);font-size:13px;margin-bottom:10px;font-weight:600;letter-spacing:.02em}
+.card p{margin:0 0 10px;color:var(--muted);font-size:15px}
+.card ul{margin:0;padding-left:18px;font-size:14px;color:var(--muted)}
+.card code,.inline{background:var(--code);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:.88em}
+pre{background:var(--code);border:1px solid var(--line);border-radius:var(--radius);padding:16px;overflow:auto;font-size:14px;line-height:1.5;margin:0 0 14px}
+pre code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.cols{display:grid;gap:24px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.callout{border:1px solid var(--line);border-left:4px solid var(--warn);background:var(--panel);border-radius:var(--radius);padding:16px 20px}
+.callout b{color:var(--warn)}
+table{width:100%;border-collapse:collapse;font-size:15px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--panel2);font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+tr:last-child td{border-bottom:0}
+.ok{color:var(--accent);font-weight:600}.todo{color:var(--warn);font-weight:600}
+footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
+.table-scroll{overflow-x:auto}
+@media (max-width:640px){.hero{padding:48px 0 24px}.nav nav a:nth-child(n+4){display:none}}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2l12 7v14l-12 7-12-7V9z" fill="var(--accent)"/></svg>HEXAOS</a>
+    <nav>
+      <a href="#perfiles">Perfiles</a>
+      <a href="#inicio">Empezar</a>
+      <a href="#imagenes">Imágenes</a>
+      <a href="#ros2">ROS 2</a>
+      <a href="#estado">Estado</a>
+      <a href="https://github.com/ecuador2014/linux/tree/master/distro/hexaos">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+  <div class="hero">
+    <span class="tag">Experimental · v0.1 · GPL-2.0</span>
+    <h1>Linux de <em>tiempo real</em> para robots, drones y vehículos</h1>
+    <p class="lead">HEXAOS es una distribución ligera basada en Buildroot con kernel 6.18 LTS <code class="inline">PREEMPT_RT</code>. Una base común, cinco perfiles y una capa opcional de ROS 2. Arranca en segundos y cabe en decenas de megabytes.</p>
+    <div class="btns">
+      <a class="btn primary" href="#inicio">Compilar mi imagen</a>
+      <a class="btn" href="https://github.com/ecuador2014/linux/tree/master/distro/hexaos">Ver el código</a>
+      <a class="btn" href="https://github.com/ecuador2014/linux/tree/master/distro/hexaos/docs">Documentación</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>6.18 LTS</b><span>kernel PREEMPT_RT</span></div>
+      <div class="stat"><b>5 perfiles</b><span>humanoide, dron, coche, mini, automatización</span></div>
+      <div class="stat"><b>~49–64 MB</b><span>contenido medido (mini, dron)</span></div>
+      <div class="stat"><b>3 arquitecturas</b><span>x86_64, aarch64, arm</span></div>
+    </div>
+  </div>
+</div>
+
+<section id="perfiles">
+<div class="wrap">
+  <h2>Cinco perfiles, una base</h2>
+  <p class="sub">Cada perfil añade solo lo que necesita: drivers de kernel, paquetes y servicios de arranque.</p>
+  <div class="grid">
+    <article class="card"><h3>humanoid</h3><div class="for">Humanoides, brazos, cuadrúpedos</div>
+      <p>Control de actuadores por CAN a 1 Mbit/s, joystick, audio y cámaras.</p>
+      <ul><li>SocketCAN, GPIO, I2C, SPI, IIO</li><li>Lazo de control en CPU aislada con prioridad RT</li></ul></article>
+    <article class="card"><h3>drone</h3><div class="for">Computador de a bordo (PX4 / ArduPilot)</div>
+      <p>Puente MAVLink serie↔UDP, vídeo con GStreamer y GNSS.</p>
+      <ul><li><code>socat</code>, <code>gpsd</code>, GStreamer (V4L2/RTP)</li><li>El failsafe vive en el autopiloto</li></ul></article>
+    <article class="card"><h3>car</h3><div class="for">Vehículos autónomos, AGV, rovers</div>
+      <p>Bus de vehículo CAN a 500 kbit/s y sincronización de sensores por PTP.</p>
+      <ul><li><code>linuxptp</code>, <code>gpsd</code>, <code>tcpdump</code></li><li>Lazo de control en CPUs 2–3, prioridad 85</li></ul></article>
+    <article class="card"><h3>mini</h3><div class="for">Robots pequeños (Pi Zero/3/4)</div>
+      <p>Serie a Arduino/ESP32, WiFi cliente o punto de acceso y MQTT.</p>
+      <ul><li>Imagen de 128 MB (musl)</li><li>Broker <code>mosquitto</code>, <code>hostapd</code>, <code>pyserial</code></li></ul></article>
+    <article class="card"><h3>automation</h3><div class="for">Pasarelas industriales y de edificios</div>
+      <p>Modbus, OPC UA, MQTT, RS-485 y CAN con cortafuegos activo por defecto.</p>
+      <ul><li><code>libmodbus</code>, <code>open62541</code>, nftables</li><li>MQTT solo en localhost salvo que definas usuarios</li></ul></article>
+    <article class="card"><h3>Base común</h3><div class="for">Todos los perfiles</div>
+      <p>BusyBox, eudev, SSH solo con claves (Dropbear), chrony, watchdog y herramientas de diagnóstico (<code>rt-tests</code>, <code>can-utils</code>, <code>i2c-tools</code>).</p>
+      <ul><li>Ajuste RT en el arranque (<code>S05rt-tune</code>)</li><li>Supervisor del proceso de control con failsafe</li></ul></article>
+  </div>
+</div>
+</section>
+
+<section id="inicio">
+<div class="wrap">
+  <h2>Empezar</h2>
+  <p class="sub">Necesitas Linux (Debian/Ubuntu), unos 20 GB libres y conexión a Internet. La primera compilación tarda entre 30 y 90 minutos.</p>
+  <div class="cols">
+    <div>
+      <pre><code># 1. Dependencias
+sudo apt install build-essential git curl \
+  wget cpio unzip rsync bc file flex bison \
+  libncurses-dev libssl-dev python3 perl \
+  qemu-system-x86
+
+# 2. Código
+git clone https://github.com/ecuador2014/linux.git
+cd linux/distro/hexaos</code></pre>
+    </div>
+    <div>
+      <pre><code># 3. Compilar un perfil
+HEXA_SSH_PUBKEY=~/.ssh/id_ed25519.pub \
+  ./build.sh humanoid
+
+# Con ROS 2 y/o otra arquitectura
+ROS2=1 ARCH=aarch64 ./build.sh drone
+
+# 4. Probar en QEMU (root, sin contraseña)
+./run-qemu.sh humanoid</code></pre>
+    </div>
+  </div>
+  <p>Perfiles disponibles: <code class="inline">humanoid</code>, <code class="inline">drone</code>, <code class="inline">car</code>, <code class="inline">mini</code>, <code class="inline">automation</code>. Más detalle en la <a href="https://github.com/ecuador2014/linux/blob/master/distro/hexaos/docs/GETTING-STARTED.md">guía de primeros pasos</a>.</p>
+</div>
+</section>
+
+<section id="imagenes">
+<div class="wrap">
+  <h2>ISO live e imagen de disco</h2>
+  <p class="sub">Cada compilación x86_64 genera también imágenes arrancables por BIOS y UEFI.</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Archivo</th><th>Para qué sirve</th></tr></thead>
+    <tbody>
+      <tr><td><code>hexaos-&lt;perfil&gt;-live.iso</code></td><td>Sistema live: corre en RAM, los cambios se pierden al apagar.</td></tr>
+      <tr><td><code>hexaos-&lt;perfil&gt;.img</code></td><td>Imagen de disco para grabar en USB o SSD, con raíz ext4 persistente.</td></tr>
+    </tbody>
+  </table></div>
+  <pre style="margin-top:14px"><code># Grabar en un USB/SSD (comprueba bien /dev/sdX: se borra todo)
+sudo dd if=output/humanoid_x86_64/images/hexaos-humanoid.img \
+  of=/dev/sdX bs=4M status=progress conv=fsync
+
+# Probar sin hardware
+MODE=iso ./run-qemu.sh humanoid
+MODE=img UEFI=1 ./run-qemu.sh humanoid</code></pre>
+  <div class="callout"><b>Sin descargas todavía.</b> Aún no se publican binarios precompilados: las imágenes se generan en tu máquina con los pasos de arriba.</div>
+</div>
+</section>
+
+<section id="ros2">
+<div class="wrap">
+  <h2>Capa ROS 2</h2>
+  <p class="sub">ROS 2 Jazzy con Cyclone DDS como capa opcional (glibc). Se compila de forma cruzada con el SDK de la propia imagen y se instala en <code class="inline">/opt/ros</code>.</p>
+  <pre><code># 1ª vez: falla al final por falta del tarball (es normal)
+ROS2=1 ./build.sh humanoid
+make -C .buildroot-*/ O=$PWD/output/humanoid_ros2_x86_64 sdk
+# genera ros2/output/humanoid_x86_64/ros2-install.tar.gz
+./ros2/cross-build.sh humanoid
+# imagen final con /opt/ros
+ROS2=1 ./build.sh humanoid</code></pre>
+  <p>En el robot, el servicio <code class="inline">S91ros2</code> lanza tu <em>launch file</em> con prioridad de tiempo real. Detalles en <a href="https://github.com/ecuador2014/linux/blob/master/distro/hexaos/docs/ROS2.md">docs/ROS2.md</a>. La variante ROS 2 no se ofrece en ARM de 32 bits.</p>
+</div>
+</section>
+
+<section id="estado">
+<div class="wrap">
+  <h2>Estado del proyecto</h2>
+  <p class="sub">Transparencia sobre lo que está probado y lo que no.</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Qué</th><th>Estado</th></tr></thead>
+    <tbody>
+      <tr><td>Compilación y arranque en QEMU x86_64 de los cinco perfiles</td><td class="ok">Verificado</td></tr>
+      <tr><td>Kernel <code>PREEMPT_RT</code>, red por DHCP, servicios de arranque</td><td class="ok">Verificado en QEMU</td></tr>
+      <tr><td>Cortafuegos y MQTT seguro por defecto (<code>automation</code>)</td><td class="ok">Verificado en QEMU</td></tr>
+      <tr><td>ISO live e imagen de disco (BIOS y UEFI)</td><td class="ok">Verificado con un sistema mínimo</td></tr>
+      <tr><td>ISO live e imagen de disco con un HEXAOS real</td><td class="todo">Pendiente</td></tr>
+      <tr><td>Capa ROS 2 (compilación cruzada)</td><td class="todo">Sin compilar</td></tr>
+      <tr><td>CAN, PTP, GPS, MAVLink y Wi-Fi con hardware real</td><td class="todo">Sin probar</td></tr>
+      <tr><td>Raspberry Pi y otras placas ARM (imagen genérica, sin bootloader ni DTB)</td><td class="todo">Requiere adaptación</td></tr>
+    </tbody>
+  </table></div>
+  <div style="height:16px"></div>
+  <div class="callout"><b>Seguridad.</b> HEXAOS es software experimental sin certificación. Un robot, dron o coche puede causar daños graves: prueba siempre con el vehículo sujeto, hélices fuera o ruedas elevadas y un paro de emergencia físico independiente de Linux. La consola de root no tiene contraseña (solo desarrollo). Lee <a href="https://github.com/ecuador2014/linux/blob/master/distro/hexaos/docs/SAFETY-SECURITY.md">SAFETY-SECURITY.md</a> antes de mover un actuador.</div>
+</div>
+</section>
+
+<section>
+<div class="wrap">
+  <h2>Documentación</h2>
+  <div class="grid">
+    <a class="card" style="text-decoration:none;color:inherit" href="https://github.com/ecuador2014/linux/blob/master/distro/hexaos/docs/ARCHITECTURE.md"><h3>Arquitectura</h3><p>Árbol de Buildroot, perfiles y arranque.</p></a>
+    <a class="card" style="text-decoration:none;color:inherit" href="https://github.com/ecuador2014/linux/blob/master/distro/hexaos/docs/CONFIGURATION.md"><h3>Configuración</h3><p>Referencia de <code>/etc/hexa/*</code> y servicios.</p></a>
+    <a class="card" style="text-decoration:none;color:inherit" href="https://github.com/ecuador2014/linux/blob/master/distro/hexaos/docs/REALTIME.md"><h3>Tiempo real</h3><p>Ajuste y medición de latencia.</p></a>
+    <a class="card" style="text-decoration:none;color:inherit" href="https://github.com/ecuador2014/linux/blob/master/distro/hexaos/docs/PORTING.md"><h3>Portar a otras placas</h3><p>Raspberry Pi, Jetson y nuevos perfiles.</p></a>
+    <a class="card" style="text-decoration:none;color:inherit" href="https://github.com/ecuador2014/linux/blob/master/distro/hexaos/docs/PROJECTS.md"><h3>Recetas de proyectos</h3><p>Humanoide, dron, coche, automatización.</p></a>
+    <a class="card" style="text-decoration:none;color:inherit" href="https://github.com/ecuador2014/linux/blob/master/distro/hexaos/docs/TROUBLESHOOTING.md"><h3>Problemas frecuentes</h3><p>Errores de compilación y de arranque.</p></a>
+  </div>
+</div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>HEXAOS · parte del proyecto <a href="https://www.t800.tech">T800</a> · licencia GPL-2.0-only (Buildroot y los paquetes conservan las suyas)</span>
+    <span><a href="https://github.com/ecuador2014/linux/tree/master/distro/hexaos">Código</a> · <a href="https://github.com/ecuador2014/linux/blob/master/distro/hexaos/CHANGELOG.md">Cambios</a> · <a href="https://github.com/ecuador2014/linux/blob/master/distro/hexaos/CONTRIBUTING.md">Contribuir</a></span>
+  </div>
+</footer>
+</body>
+</html>
