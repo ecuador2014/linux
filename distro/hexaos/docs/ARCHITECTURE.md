@@ -8,6 +8,7 @@ hexaos/
 ├── package/ros2-runtime/                     # paquete Buildroot: instala el árbol ROS 2 en /opt/ros
 ├── profiles/*.frag                           # piezas de defconfig: arch, libc, base, perfil, ros2
 ├── tools/gen-defconfigs.sh                   # compone profiles/ -> configs/ (defconfigs)
+├── tools/make-images.sh                      # x86_64: ISO live (BIOS+UEFI) e imagen de disco .img
 ├── configs/                                  # defconfigs GENERADOS (no editar a mano)
 ├── board/hexaos/
 │   ├── linux-{base,humanoid,drone,car,mini,automation}.fragment   # opciones de kernel

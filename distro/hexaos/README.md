@@ -15,7 +15,7 @@ Cada perfil tiene variante **ROS 2** (Jazzy + Cyclone DDS) y arquitecturas `x86_
 
 ```sh
 ./tools/gen-defconfigs.sh                 # (re)genera configs/ — ya vienen generadas
-HEXA_SSH_PUBKEY=~/.ssh/id_ed25519.pub ./build.sh humanoid          # mínima (musl)
+HEXA_SSH_PUBKEY=~/.ssh/id_ed25519.pub ./build.sh humanoid          # mínima (musl); en x86_64 genera además ISO live e .img de disco
 ROS2=1 ARCH=aarch64 ./build.sh drone                                # con ROS 2, ARM64
 ARCH=arm ./build.sh mini                                            # robot pequeño ARMv7, sin ROS 2
 ./run-qemu.sh humanoid                                              # prueba x86_64 en QEMU
