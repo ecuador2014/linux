@@ -15,6 +15,7 @@ hexaos/
 │   ├── overlay-common/    # RT-tuning, CAN, supervisor, sysctl, SSH
 │   ├── overlay-<perfil>/  # profile.conf + servicios específicos
 │   ├── overlay-ros2/      # ros2.conf, cyclonedds.xml, S91ros2, profile.d
+│   ├── overlay-gui/       # kiosk.conf, S60kiosk (seatd + Cage), hexa-panel, foot.ini
 │   └── post-build.sh      # permisos + clave SSH
 ├── ros2/cross-build.sh                       # compila ROS 2 con el SDK de Buildroot
 ├── docs/  examples/  build.sh  run-qemu.sh
@@ -38,6 +39,7 @@ BusyBox init ejecuta `/etc/init.d/S*` en orden:
 | `S30wifi` (mini) | WiFi cliente o AP de configuración |
 | `S50dropbear` | SSH solo clave |
 | `S90hexa-core` | supervisor de `CORE_CMD` + failsafe |
+| `S60kiosk` (gui) | seatd + Cage a pantalla completa como usuario `kiosk` |
 | `S91ros2` (ros2) | `ros2 launch` con prioridad RT + failsafe |
 
 ## Decisiones de diseño

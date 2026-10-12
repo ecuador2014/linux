@@ -1,0 +1,197 @@
+name: HEXAOS images
+
+# EJEMPLO INACTIVO (sin validar): para activarlo, copialo a .github/workflows/hexaos-images.yml
+# (en el repo del kernel hay que anadirlo con "git add -f", porque .gitignore ignora .github).
+# Compila los perfiles de HEXAOS (x86_64) y genera la ISO live y la imagen de disco.
+#  - workflow_dispatch: elegir perfiles; con "publish" crea un release (pre-release) con las imagenes.
+#  - tag hexaos-v*: compila los 5 perfiles y publica el release.
+on:
+  workflow_dispatch:
+    inputs:
+      profiles:
+        description: "Perfiles separados por coma (humanoid,drone,car,mini,automation)"
+        required: false
+        default: "humanoid,drone,car,mini,automation"
+      publish:
+        description: "Crear release con las imagenes"
+        type: boolean
+        default: false
+      tag:
+        description: "Tag del release (hexaos-vX.Y.Z); obligatorio si publish"
+        required: false
+        default: ""
+  push:
+    tags: ["hexaos-v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hexaos-images-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  BUILDROOT_VERSION: "2025.02.1"
+
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      profiles: ${{ steps.p.outputs.profiles }}
+    steps:
+      - id: p
+        env:
+          EVENT: ${{ github.event_name }}
+          REF_TYPE: ${{ github.ref_type }}
+          INPUT_PROFILES: ${{ inputs.profiles }}
+        run: |
+          set -eu
+          if [ "$EVENT" = workflow_dispatch ]; then
+            list="$INPUT_PROFILES"
+          elif [ "$REF_TYPE" = tag ]; then
+            list="humanoid,drone,car,mini,automation"
+          else
+            list="humanoid"
+          fi
+          json="["
+          for p in $(echo "$list" | tr ',' ' '); do
+            case "$p" in humanoid|drone|car|mini|automation) ;; *) echo "perfil no valido: $p"; exit 1 ;; esac
+            json="$json\"$p\","
+          done
+          json="${json%,}]"
+          echo "profiles=$json" >> "$GITHUB_OUTPUT"
+          echo "Perfiles: $json"
+
+  build:
+    needs: plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 330
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: ${{ fromJSON(needs.plan.outputs.profiles) }}
+    env:
+      PROFILE: ${{ matrix.profile }}
+      ARCH: x86_64
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Liberar espacio en disco
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost
+          sudo docker image prune --all --force >/dev/null 2>&1 || true
+          df -h /
+
+      - name: Instalar dependencias
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+            build-essential git curl wget cpio unzip rsync bc file flex bison libssl-dev libncurses-dev \
+            python3 perl qemu-system-x86 \
+            grub-pc-bin grub-efi-amd64-bin xorriso mtools syslinux syslinux-common dosfstools fdisk e2fsprogs
+
+      - name: Cache de descargas de Buildroot
+        uses: actions/cache@v4
+        with:
+          path: distro/hexaos/.buildroot-${{ env.BUILDROOT_VERSION }}/dl
+          key: hexaos-dl-${{ env.BUILDROOT_VERSION }}-${{ matrix.profile }}-${{ hashFiles('distro/hexaos/configs/**') }}
+          restore-keys: |
+            hexaos-dl-${{ env.BUILDROOT_VERSION }}-${{ matrix.profile }}-
+            hexaos-dl-${{ env.BUILDROOT_VERSION }}-
+
+      - name: Compilar (Buildroot + kernel + ISO + imagen de disco)
+        working-directory: distro/hexaos
+        run: ./build.sh "$PROFILE" 2>&1 | tee build.log
+
+      - name: Comprobar artefactos
+        working-directory: distro/hexaos
+        run: |
+          set -eu
+          I=output/${PROFILE}_${ARCH}/images
+          ls -lh "$I"
+          for f in bzImage rootfs.ext4 "hexaos-$PROFILE-live.iso" "hexaos-$PROFILE.img"; do test -s "$I/$f"; done
+          # ISO: debe tener entradas El Torito BIOS y UEFI
+          xorriso -indev "$I/hexaos-$PROFILE-live.iso" -report_el_torito plain 2>&1 | tee /tmp/eltorito.txt
+          grep -q ' BIOS ' /tmp/eltorito.txt && grep -q ' UEFI ' /tmp/eltorito.txt
+          # Disco: dos particiones (arranque FAT32 ef + raiz ext4 83)
+          sfdisk -l "$I/hexaos-$PROFILE.img" | tee /tmp/parts.txt
+          [ "$(grep -c "hexaos-$PROFILE.img[12]" /tmp/parts.txt)" = 2 ]
+
+      - name: Prueba de arranque en QEMU (kernel + rootfs)
+        working-directory: distro/hexaos
+        run: |
+          set -u
+          I=output/${PROFILE}_${ARCH}/images
+          cp "$I/rootfs.ext4" /tmp/rootfs-test.ext4
+          qemu-system-x86_64 -M pc -m 1024 -smp 2 -nographic -nic user -kernel "$I/bzImage" \
+            -drive file=/tmp/rootfs-test.ext4,format=raw,if=virtio \
+            -append "root=/dev/vda rw console=ttyS0 net.ifnames=0" > /tmp/boot.log 2>&1 &
+          pid=$!
+          for i in $(seq 300); do grep -q 'login:' /tmp/boot.log && break; sleep 1; done
+          kill "$pid" 2>/dev/null || true
+          if ! grep -q 'login:' /tmp/boot.log; then tail -80 /tmp/boot.log; echo "No llego al login"; exit 1; fi
+          grep -a 'PREEMPT_RT' /tmp/boot.log | head -1 || true
+          grep -a -E 'login:' /tmp/boot.log | head -1
+
+      - name: Empaquetar
+        working-directory: distro/hexaos
+        run: |
+          set -eu
+          I=output/${PROFILE}_${ARCH}/images
+          mkdir -p /tmp/out
+          cp "$I/hexaos-$PROFILE-live.iso" /tmp/out/
+          xz -T0 -6 -c "$I/hexaos-$PROFILE.img" > "/tmp/out/hexaos-$PROFILE.img.xz"
+          ls -lh /tmp/out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hexaos-${{ matrix.profile }}
+          path: /tmp/out/*
+          retention-days: 30
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: buildlog-${{ matrix.profile }}
+          path: distro/hexaos/build.log
+          retention-days: 7
+          if-no-files-found: ignore
+
+  release:
+    needs: build
+    if: ${{ github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && inputs.publish) }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: hexaos-*
+          merge-multiple: true
+          path: dist
+
+      - name: Crear release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          set -eu
+          if [ "$REF_TYPE" = tag ]; then TAG="$REF_NAME"; else TAG="$INPUT_TAG"; fi
+          case "$TAG" in hexaos-v[0-9]*) ;; *) echo "Tag invalido: '$TAG' (usa hexaos-vX.Y.Z)"; exit 1 ;; esac
+          if printf '%s' "$TAG" | grep -q '[^A-Za-z0-9._-]'; then echo "Tag con caracteres no validos"; exit 1; fi
+          cd dist
+          sha256sum * > SHA256SUMS
+          cat > ../notes.md <<'NOTES'
+          Imagenes de **HEXAOS** (x86_64) generadas por GitHub Actions. **Experimental**: lee `distro/hexaos/docs/SAFETY-SECURITY.md` antes de mover un actuador.
+
+          - `hexaos-<perfil>-live.iso`: ISO live (BIOS y UEFI), corre en RAM.
+          - `hexaos-<perfil>.img.xz`: imagen de disco; descomprimir con `xz -d` y grabar con `dd` en un USB/SSD.
+          - Consola de root **sin contrasena** y SSH solo con clave (no hay claves incluidas): solo para desarrollo.
+          - Verificadas con una prueba de arranque del kernel en QEMU; la ISO y el .img se comprueban estructuralmente, no se arrancan en CI.
+          - Comprueba la integridad con `sha256sum -c SHA256SUMS`.
+          NOTES
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --prerelease --title "HEXAOS $TAG" --notes-file ../notes.md ./*

@@ -1,0 +1,48 @@
+#!/bin/sh
+# Panel de estado de HEXAOS para el kiosco (terminal a pantalla completa). Solo lee /proc, /sys e ip.
+# PANEL_ONCE=1 imprime una vez y sale (util para pruebas).
+[ -r /etc/hexa/hexa.conf ] && . /etc/hexa/hexa.conf
+T='\033[38;2;25;211;192m'; B='\033[1m'; D='\033[2m'; R='\033[0m'; G='\033[32m'; Y='\033[33m'; X='\033[31m'
+host=$(hostname); profile=${host#hexa-}
+
+dot() { if [ "$1" = ok ]; then printf "${G}●${R}"; elif [ "$1" = warn ]; then printf "${Y}●${R}"; else printf "${X}●${R}"; fi; }
+
+draw() {
+    printf '\033[H\033[2J'
+    printf "${T}${B}◆ HEXAOS${R}  ${D}perfil${R} ${B}%s${R}\n" "$profile"
+    printf "${D}%s${R}\n\n" "$(date '+%Y-%m-%d %H:%M:%S')"
+
+    kernel=$(uname -r); rt=; uname -v | grep -q PREEMPT_RT && rt=" PREEMPT_RT"
+    printf "${T}SISTEMA${R}\n  kernel   %s%s\n" "$kernel" "$rt"
+    up=$(cut -d. -f1 /proc/uptime); printf "  uptime   %dh %02dm\n" $((up/3600)) $((up%3600/60))
+    printf "  carga    %s\n" "$(cut -d' ' -f1-3 /proc/loadavg)"
+    awk '/MemTotal/{t=$2} /MemAvailable/{a=$2} END{printf "  memoria  %d / %d MB\n", (t-a)/1024, t/1024}' /proc/meminfo
+    for z in /sys/class/thermal/thermal_zone*/temp; do
+        [ -r "$z" ] && { printf "  temp     %d °C\n" $(( $(cat "$z") / 1000 )); break; }
+    done
+
+    printf "\n${T}RED${R}\n"
+    ip -o -4 addr show scope global 2>/dev/null | awk '{printf "  %-8s %s\n", $2, $4}'
+
+    if [ -n "$CAN_IFACES" ]; then
+        printf "\n${T}CAN${R}\n"
+        for i in $CAN_IFACES; do
+            if ip link show "$i" >/dev/null 2>&1; then
+                st=$(ip -o link show "$i" | grep -q 'state UP\|UP,LOWER_UP' && echo ok || echo warn)
+                printf "  $(dot $st) %s  %s bit/s\n" "$i" "${CAN_BITRATE:-?}"
+            else
+                printf "  $(dot err) %s  ${D}no disponible${R}\n" "$i"
+            fi
+        done
+    fi
+
+    printf "\n${T}CONTROL${R}\n"
+    core=$(basename "${CORE_CMD:-/opt/hexa/bin/hexa-core}")
+    if pidof "$core" >/dev/null 2>&1; then printf "  $(dot ok) %s en ejecucion\n" "$core"
+    else printf "  $(dot warn) %s ${D}no esta en ejecucion${R}\n" "$core"; fi
+    printf "\n${D}HEXAOS · kiosco Wayland (Cage)${R}\n"
+}
+
+if [ "$PANEL_ONCE" = 1 ]; then draw; exit 0; fi
+printf '\033[?25l'; trap 'printf "\033[?25h"' EXIT
+while :; do draw; sleep 1; done
