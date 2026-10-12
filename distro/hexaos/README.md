@@ -28,6 +28,7 @@ ARCH=arm ./build.sh mini                                            # robot pequ
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Estructura del árbol, capas, cómo se genera una imagen |
 | [docs/PROFILES.md](docs/PROFILES.md) | Humanoide, dron, coche: hardware, buses, proyectos típicos |
 | [docs/ROS2.md](docs/ROS2.md) | Capa ROS 2: compilación cruzada, DDS, launch, micro-ROS |
+| [docs/GUI.md](docs/GUI.md) | Capa gráfica: kiosco Wayland con Cage (`GUI=1`) |
 | [docs/CONFIGURATION.md](docs/CONFIGURATION.md) | Referencia de `/etc/hexa/*`, servicios y variables |
 | [docs/REALTIME.md](docs/REALTIME.md) | Ajuste y medición de latencia (cyclictest) |
 | [docs/SAFETY-SECURITY.md](docs/SAFETY-SECURITY.md) | Seguridad funcional y de acceso: léelo antes de mover un actuador |

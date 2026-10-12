@@ -5,5 +5,6 @@
 - Perfil `automation`: Modbus, OPC UA, MQTT, RS-485, CAN, cortafuegos nftables por defecto.
 - Perfil `mini` para robots pequeños: WiFi cliente/AP, MQTT, serie a MCU, imagen de 128 MB.
 - Capa ROS 2 (Jazzy, Cyclone DDS) con compilación cruzada.
+- Capa gráfica opcional `GUI=1`: kiosco Wayland con Cage, usuario `kiosk` sin privilegios y panel de estado (`docs/GUI.md`). Sin probar con Buildroot.
 - x86_64: ISO live (BIOS+UEFI) e imagen de disco `.img` por perfil (`tools/make-images.sh`); `run-qemu.sh` con `MODE=iso|img` y `UEFI=1`.
 - Documentación y ejemplos. Sin compilar ni probar en hardware.

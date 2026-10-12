@@ -1,11 +1,16 @@
 #!/bin/sh
-# Uso: [ROS2=1] [ARCH=x86_64|aarch64|arm] ./build.sh <humanoid|drone|car|mini|automation>   (arm: sin ROS 2)
+# Uso: [ROS2=1 | GUI=1] [ARCH=x86_64|aarch64|arm] ./build.sh <humanoid|drone|car|mini|automation>
+#   ROS2=1: capa ROS 2 (no en arm)   GUI=1: capa grafica Cage (solo x86_64/aarch64; no se combina con ROS2)
 # Variables: BUILDROOT_VERSION, HEXA_SSH_PUBKEY (ruta a tu clave .pub)
 set -e
 HERE=$(cd "$(dirname "$0")" && pwd)
 PROFILE=${1:?Uso: ./build.sh <humanoid|drone|car|mini|automation>}
 ARCH=${ARCH:-x86_64}
 SUF=; [ "${ROS2:-0}" = 1 ] && SUF=_ros2
+if [ "${GUI:-0}" = 1 ]; then
+    [ -n "$SUF" ] && { echo "GUI=1 y ROS2=1 todavia no se pueden combinar"; exit 1; }
+    SUF=_gui
+fi
 DEFCONFIG=hexaos_${PROFILE}${SUF}_${ARCH}_defconfig
 BR_VER=${BUILDROOT_VERSION:-2025.02.1}
 BR_DIR=$HERE/.buildroot-$BR_VER

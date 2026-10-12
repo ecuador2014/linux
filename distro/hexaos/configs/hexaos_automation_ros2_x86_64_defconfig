@@ -1,4 +1,4 @@
-# HEXAOS - perfil automation, x86_64, libc glibc, ROS 2: yes  (GENERADO por tools/gen-defconfigs.sh)
+# HEXAOS - perfil automation, x86_64, libc glibc, capa: ros2  (GENERADO por tools/gen-defconfigs.sh)
 BR2_x86_64=y
 BR2_LINUX_KERNEL_BZIMAGE=y
 BR2_LINUX_KERNEL_USE_ARCH_DEFAULT_CONFIG=y

@@ -1,0 +1,31 @@
+#!/bin/sh
+# Kiosco Wayland: seatd + Cage ejecutando KIOSK_CMD como el usuario "kiosk". Se reinicia si cae.
+. /etc/hexa/hexa.conf
+. /etc/hexa/kiosk.conf
+PIDFILE=/var/run/kiosk.pid
+RT=/run/kiosk
+
+run_kiosk() {
+    # Espera al dispositivo de video (hasta 30 s); sin el, reintenta
+    for i in $(seq 30); do [ -e /dev/dri/card0 ] && break; sleep 1; done
+    if [ ! -e /dev/dri/card0 ]; then logger -t hexa-kiosk "sin /dev/dri/card0: kiosco desactivado"; return; fi
+    mkdir -p "$RT"; chown kiosk:kiosk "$RT"; chmod 0700 "$RT"
+    pidof seatd >/dev/null 2>&1 || seatd -g video >/var/log/seatd.log 2>&1 &
+    for i in $(seq 10); do [ -S /run/seatd.sock ] && break; sleep 1; done
+    while :; do
+        su -s /bin/sh kiosk -c "export LANG=C.UTF-8 XDG_RUNTIME_DIR=$RT LIBSEAT_BACKEND=seatd WLR_RENDERER=$KIOSK_RENDERER WLR_LIBINPUT_NO_DEVICES=1 WLR_RENDERER_ALLOW_SOFTWARE=1; exec cage -d -s -- $KIOSK_CMD"
+        logger -t hexa-kiosk "cage termino (rc=$?)"
+        sleep 3
+    done
+}
+
+case "$1" in
+  start)
+    [ "$KIOSK_ENABLE" = 1 ] && command -v cage >/dev/null 2>&1 || exit 0
+    run_kiosk &
+    echo $! > "$PIDFILE" ;;
+  stop)
+    [ -f "$PIDFILE" ] && kill "$(cat "$PIDFILE")" 2>/dev/null
+    pkill cage 2>/dev/null; pkill seatd 2>/dev/null; rm -f "$PIDFILE" ;;
+  *) echo "Uso: $0 {start|stop}"; exit 1 ;;
+esac

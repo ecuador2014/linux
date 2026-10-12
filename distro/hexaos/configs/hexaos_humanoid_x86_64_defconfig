@@ -1,4 +1,4 @@
-# HEXAOS - perfil humanoid, x86_64, libc musl, ROS 2: no  (GENERADO por tools/gen-defconfigs.sh)
+# HEXAOS - perfil humanoid, x86_64, libc musl, capa: base  (GENERADO por tools/gen-defconfigs.sh)
 BR2_x86_64=y
 BR2_LINUX_KERNEL_BZIMAGE=y
 BR2_LINUX_KERNEL_USE_ARCH_DEFAULT_CONFIG=y

@@ -1,4 +1,4 @@
-# HEXAOS - perfil car, aarch64, libc musl, ROS 2: no  (GENERADO por tools/gen-defconfigs.sh)
+# HEXAOS - perfil car, aarch64, libc musl, capa: base  (GENERADO por tools/gen-defconfigs.sh)
 BR2_aarch64=y
 BR2_cortex_a72=y
 BR2_LINUX_KERNEL_IMAGE=y
