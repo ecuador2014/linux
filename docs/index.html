@@ -129,7 +129,7 @@ footer .wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
       <p>Modbus, OPC UA, MQTT, RS-485 y CAN con cortafuegos activo por defecto.</p>
       <ul><li><code>libmodbus</code>, <code>open62541</code>, nftables</li><li>MQTT solo en localhost salvo que definas usuarios</li></ul></article>
     <article class="card"><h3>Base común</h3><div class="for">Todos los perfiles</div>
-      <p>BusyBox, eudev, SSH solo con claves (Dropbear), chrony, watchdog y herramientas de diagnóstico (<code>rt-tests</code>, <code>can-utils</code>, <code>i2c-tools</code>).</p>
+      <p>BusyBox, eudev, SSH solo con claves (Dropbear), chrony, watchdog y herramientas de diagnóstico (<code>can-utils</code>, <code>i2c-tools</code>; <code>rt-tests</code> solo en imágenes glibc).</p>
       <ul><li>Ajuste RT en el arranque (<code>S05rt-tune</code>)</li><li>Supervisor del proceso de control con failsafe</li></ul></article>
   </div>
 </div>

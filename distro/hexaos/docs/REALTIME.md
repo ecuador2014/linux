@@ -9,7 +9,8 @@ Kernel `PREEMPT_RT`, `HZ=1000`, `NO_HZ_FULL`, RCU callbacks fuera de CPUs aislad
 2. En tu proceso: `mlockall(MCL_CURRENT|MCL_FUTURE)`, preasigna memoria, evita `malloc`/IO/logs en el lazo, usa `clock_nanosleep(TIMER_ABSTIME)`.
 3. Desactiva en BIOS: C-states profundos, Turbo/SMT si buscas mínima latencia, SMI.
 
-## Medir (incluye `rt-tests`)
+## Medir (`rt-tests`, solo en imágenes glibc)
+`cyclictest` viene de `rt-tests`, que **no se puede compilar con musl**: las imágenes base (musl) no lo incluyen; sí las variantes ROS 2 (glibc).
 ```sh
 cyclictest -m -S -p 95 -i 200 -D 1h -h 400 -q      # latencia de planificación bajo carga
 stress-ng --cpu 4 --io 2 --vm 1 &                  # genera carga en otras CPUs (instálalo si lo necesitas)
