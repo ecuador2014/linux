@@ -1,5 +1,7 @@
 name: HEXAOS images
 
+# EJEMPLO INACTIVO (sin validar): para activarlo, copialo a .github/workflows/hexaos-images.yml
+# (en el repo del kernel hay que anadirlo con "git add -f", porque .gitignore ignora .github).
 # Compila los perfiles de HEXAOS (x86_64) y genera la ISO live y la imagen de disco.
 #  - workflow_dispatch: elegir perfiles; con "publish" crea un release (pre-release) con las imagenes.
 #  - tag hexaos-v*: compila los 5 perfiles y publica el release.
@@ -20,7 +22,6 @@ on:
         default: ""
   push:
     tags: ["hexaos-v*"]
-    branches: ["claude/sweet-bell-ut4zj8"]   # TEMPORAL: depuracion del flujo (compila solo humanoid)
 
 permissions:
   contents: read
