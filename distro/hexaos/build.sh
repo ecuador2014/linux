@@ -1,5 +1,5 @@
 #!/bin/sh
-# Uso: [ROS2=1 | GUI=1] [ARCH=x86_64|aarch64|arm] ./build.sh <humanoid|drone|car|mini|automation>
+# Uso: [ROS2=1 | GUI=1] [ARCH=x86_64|aarch64|arm|rpi4] ./build.sh <humanoid|drone|car|mini|automation>
 #   ROS2=1: capa ROS 2 (no en arm)   GUI=1: capa grafica Cage (solo x86_64/aarch64; no se combina con ROS2)
 # Variables: BUILDROOT_VERSION, HEXA_SSH_PUBKEY (ruta a tu clave .pub)
 set -e
@@ -27,4 +27,7 @@ echo "Listo: $OUT/images/"
 if [ "$ARCH" = x86_64 ]; then
     "$HERE/tools/make-images.sh" "$OUT/images" "$PROFILE${SUF}" || \
         echo "Aviso: no se generaron la ISO ni el .img (ver dependencias en tools/make-images.sh); bzImage y rootfs.ext4 siguen disponibles"
+fi
+if [ "$ARCH" = rpi4 ]; then
+    echo "Imagen de tarjeta SD: $OUT/images/sdcard.img   (grabar: sudo dd if=... of=/dev/sdX bs=4M conv=fsync)"
 fi

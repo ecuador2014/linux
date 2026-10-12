@@ -1,0 +1,20 @@
+# Arranque de HEXAOS en Raspberry Pi 4 / 400 / CM4 (basado en config_4_64bit.txt de Buildroot)
+start_file=start4.elf
+fixup_file=fixup4.dat
+kernel=Image
+arm_64bit=1
+disable_overscan=1
+
+# Sin entorno grafico por defecto: memoria minima para la GPU
+gpu_mem=16
+
+# Consola serie en ttyAMA0 (GPIO14/15, 115200): el Bluetooth pasa a la UART "mini"
+enable_uart=1
+dtoverlay=miniuart-bt
+
+# --- Opcional ---
+# Bus CAN con una placa MCP2515 (HAT/shield) por SPI; ajusta el cristal y el pin de interrupcion de tu placa:
+#dtparam=spi=on
+#dtoverlay=mcp2515-can0,oscillator=12000000,interrupt=25
+# Para baja latencia puedes fijar la frecuencia de la CPU al maximo:
+#force_turbo=1

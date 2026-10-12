@@ -7,6 +7,9 @@ Las configs `aarch64` son **genéricas** (kernel upstream `defconfig`, sin firmw
 3. Si la placa necesita kernel de fabricante (Raspberry Pi, Rockchip), puede no tener `PREEMPT_RT`: comprueba la rama RT.
 4. Crea `profiles/arch-<placa>.frag` y añádela al bucle de `tools/gen-defconfigs.sh`.
 
+## Raspberry Pi 4
+Ya hay configuración propia: `ARCH=rpi4` ([RPI.md](RPI.md)). Lo que sigue es para otras placas.
+
 ## Raspberry Pi (mini, ARM 32/64 bits)
 `ARCH=arm` usa `multi_v7_defconfig` upstream y `aarch64` el `defconfig` arm64: ninguno trae el firmware/DTB de la Pi. Pasos:
 tomar `raspberrypi3_defconfig` / `raspberrypi4_64_defconfig` de Buildroot como base de bootloader (`rpi-firmware`, `genimage`, `config.txt`),

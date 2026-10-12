@@ -11,7 +11,7 @@ Distro Linux ligera y de **tiempo real** para robótica móvil. Una base común 
 | `mini` | Robots pequeños: Pi Zero/3/4, rovers, brazos, seguidores de línea (rootfs 128 MB) | GPIO/I2C + serie a Arduino/ESP32 | WiFi cliente/AP, MQTT, Bluetooth, 1-Wire |
 
 Todos incluyen kernel 6.18 LTS `PREEMPT_RT`, BusyBox, SSH solo con claves y herramientas de diagnóstico.
-Cada perfil tiene variante **ROS 2** (Jazzy + Cyclone DDS) y arquitecturas `x86_64`, `aarch64` y `arm` (32 bits, ARMv7; solo sin ROS 2).
+Cada perfil tiene variante **ROS 2** (Jazzy + Cyclone DDS) y arquitecturas `x86_64`, `aarch64` y `arm` (genéricas, sin placa concreta; `arm` es de 32 bits y solo sin ROS 2), más **Raspberry Pi 4** (`ARCH=rpi4`, imagen de tarjeta SD, ver [docs/RPI.md](docs/RPI.md)).
 
 ```sh
 ./tools/gen-defconfigs.sh                 # (re)genera configs/ — ya vienen generadas
@@ -28,6 +28,7 @@ ARCH=arm ./build.sh mini                                            # robot pequ
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Estructura del árbol, capas, cómo se genera una imagen |
 | [docs/PROFILES.md](docs/PROFILES.md) | Humanoide, dron, coche: hardware, buses, proyectos típicos |
 | [docs/ROS2.md](docs/ROS2.md) | Capa ROS 2: compilación cruzada, DDS, launch, micro-ROS |
+| [docs/RPI.md](docs/RPI.md) | Raspberry Pi 4: compilar, grabar la SD, serie, CAN, tiempo real |
 | [docs/GUI.md](docs/GUI.md) | Capa gráfica: kiosco Wayland con Cage (`GUI=1`) |
 | [docs/CONFIGURATION.md](docs/CONFIGURATION.md) | Referencia de `/etc/hexa/*`, servicios y variables |
 | [docs/REALTIME.md](docs/REALTIME.md) | Ajuste y medición de latencia (cyclictest) |
