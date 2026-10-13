@@ -18,4 +18,5 @@
 | La ISO/.img arranca pero no veo el login | Entrada de menú equivocada: "monitor" para pantalla y teclado, "serie" para ttyS0 |
 | `GUI=1`: pantalla negra o sin kiosco | Comprueba `ls /dev/dri` (debe existir `card0`), `logread`/`dmesg`, `/var/log/seatd.log` y prueba `KIOSK_RENDERER=pixman`; en QEMU usa `./run-qemu.sh <perfil> gui` |
 | La imagen no trae `cyclictest` | `rt-tests` no existe con musl; usa una variante glibc (`ROS2=1`) o compila la distro con glibc |
+| `car`: `ptp4l` no sincroniza (QEMU o NIC sin PTP) | Necesita una NIC con sellado de tiempo por hardware (`ethtool -T eth0`); en QEMU (e1000) `ptp4l` no puede funcionar. Con tiempo por software cambia `time_stamping` en `/etc/hexa/ptp4l.conf` |
 | aarch64 no arranca en la placa | Las configs genéricas no incluyen bootloader/DTB: `docs/PORTING.md` |

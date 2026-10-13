@@ -1,0 +1,4 @@
+# Lo lee /etc/init.d/S66phc2sys (paquete linuxptp): sincroniza el reloj del sistema con el reloj PTP (PHC) de la NIC.
+# ATENCION: chrony (NTP) tambien corrige el reloj del sistema; si usas PTP como fuente de hora, desactiva S49chronyd
+# o usa en chrony "refclock PHC /dev/ptp0" en lugar de phc2sys, para que no se peleen.
+PHC2SYS_ARGS="-a -r -S 1.0"
