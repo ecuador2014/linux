@@ -1,0 +1,3 @@
+# Lo lee /etc/init.d/S65ptp4l (paquete linuxptp). La interfaz sale de PTP_IFACE en /etc/hexa/profile.conf.
+. /etc/hexa/hexa.conf
+PTP4L_ARGS="-i $PTP_IFACE -f /etc/hexa/ptp4l.conf"

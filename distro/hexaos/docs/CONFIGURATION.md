@@ -28,7 +28,7 @@ Carga `/etc/hexa/profile.conf` y define valores por defecto.
 ## Otros
 - `/etc/sysctl.d/hexa.conf` : `sched_rt_runtime_us=-1`, buffers de red, reinicio tras panic.
 - `/etc/default/dropbear`: `-s` (sin contraseñas).
-- `/etc/hexa/ptp4l.conf` (car): PTP L2 por hardware.
+- `/etc/hexa/ptp4l.conf` (car): PTP L2 por hardware. `/etc/default/ptp4l` y `/etc/default/phc2sys` (car) fijan los argumentos de los servicios del paquete; la interfaz es `PTP_IFACE`.
 - Cmdline del kernel recomendada: `isolcpus=<N> nohz_full=<N> rcu_nocbs=<N> threadirqs`.
 
 ## Compilación

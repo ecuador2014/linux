@@ -21,7 +21,8 @@ cámaras UVC, micrófono/altavoz USB.
 ## car
 **Hardware típico:** PC industrial/ARM con 2-4 CAN, GNSS RTK por USB/serie, lidar Ethernet, cámaras GigE o USB, ECU del vehículo por CAN.
 - CAN `can0` 500 kbit/s; `RT_CPUS=2,3`, prioridad 85.
-- `S25ptp`: sincronización PTP hardware (`PTP_IFACE`) para lidar y cámaras; `chrony` para NTP.
+- **PTP** para lidar y cámaras: los servicios del paquete `linuxptp` (`S65ptp4l`, `S66phc2sys`, tras levantar la red) leen `PTP_IFACE` de `profile.conf`
+  (`/etc/default/ptp4l`). `chrony` (NTP) y `phc2sys` corrigen ambos el reloj del sistema: si usas PTP como fuente de hora, desactiva `S49chronyd` o usa en chrony `refclock PHC`.
 - `tcpdump`/`libpcap` para depurar el tráfico de sensores.
 - Proyectos: seguimiento de ruta (pure pursuit/MPC), AGV de almacén, rover agrícola, plataforma Autoware/Nav2.
 - **Define tú `FAILSAFE_CMD`** (frenado seguro) según el protocolo de tu vehículo; viene vacío a propósito.

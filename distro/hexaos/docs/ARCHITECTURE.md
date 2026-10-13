@@ -33,7 +33,7 @@ BusyBox init ejecuta `/etc/init.d/S*` en orden:
 | `S05rt-tune` | governor `performance`, sysctl RT, IRQs a CPU0 |
 | `S20can` | levanta `CAN_IFACES` a `CAN_BITRATE` |
 | `S25mavlink` (drone) | puente MAVLink serie ↔ UDP |
-| `S25ptp` (car) | `ptp4l` + `phc2sys` |
+| `S65ptp4l`, `S66phc2sys` (car) | PTP (paquete `linuxptp`), configurados con `/etc/default/{ptp4l,phc2sys}` |
 | `S10firewall` (automation) | nftables, entrada denegada por defecto |
 | `S30mosquitto-conf` (automation) | MQTT seguro por defecto |
 | `S30wifi` (mini) | WiFi cliente o AP de configuración |
